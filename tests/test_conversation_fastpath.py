@@ -11,7 +11,7 @@ import pytest
 from wynxo.experience import extra_conversation
 
 
-@pytest.mark.parametrize("request", [
+@pytest.mark.parametrize("text", [
     "explain black holes",
     "write me a poem about winter",
     "translate this sentence to German",
@@ -22,11 +22,11 @@ from wynxo.experience import extra_conversation
     "how does gravity work?",
     "who was Ada Lovelace?",
 ])
-def test_obvious_general_requests_skip_classification(request):
-    assert extra_conversation(request) is True
+def test_obvious_general_requests_skip_classification(text):
+    assert extra_conversation(text) is True
 
 
-@pytest.mark.parametrize("request", [
+@pytest.mark.parametrize("text", [
     "open firefox",
     "run the tests",
     "fix this bug",
@@ -37,14 +37,14 @@ def test_obvious_general_requests_skip_classification(request):
     "what does this function do?",
     "where is config?",
 ])
-def test_project_or_system_shaped_requests_stay_on_the_router(request):
-    assert extra_conversation(request) is False
+def test_project_or_system_shaped_requests_stay_on_the_router(text):
+    assert extra_conversation(text) is False
 
 
 def test_long_writing_request_is_still_obviously_conversation():
-    request = "write me a short story about a lighthouse. " + ("quiet sea " * 80)
-    assert len(request) > 120
-    assert extra_conversation(request) is True
+    text = "write me a short story about a lighthouse. " + ("quiet sea " * 80)
+    assert len(text) > 120
+    assert extra_conversation(text) is True
 
 
 def test_installed_router_uses_the_fast_path():
