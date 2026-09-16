@@ -52,12 +52,10 @@ def find_commands(cli_mod, query: str, limit: int = 8):
         if name in cli_mod.REGISTRY and name not in names:
             names.append(name)
 
-    for name in cli_mod.suggest_commands(query, limit=max(limit, 12)):
-        add(name)
-
     # The product completion layer already knows human intent words such as
-    # "llm", "chatter", and "repo". Reuse it when available so popup help
-    # and explicit help lookup speak the same vocabulary.
+    # "llm", "chatter", and "repo". Give those intentional matches priority;
+    # fuzzy spelling recovery is a fallback and can otherwise put a merely
+    # similar command (for example /pull for "llm") ahead of the intended one.
     try:
         from . import experience
 
@@ -65,6 +63,9 @@ def find_commands(cli_mod, query: str, limit: int = 8):
             add(name)
     except Exception:  # noqa: BLE001 - help must never take down the prompt
         pass
+
+    for name in cli_mod.suggest_commands(query, limit=max(limit, 12)):
+        add(name)
 
     stem = query.lstrip("/")
     if len(stem) >= 2:
