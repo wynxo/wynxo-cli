@@ -241,9 +241,10 @@ class ProductRepl(BaseRepl):
         return True
 
     def cmd_code(self, args: list[str]) -> bool:
-        info = getattr(self.agent, "workspace_info", None)
-        if info is None or getattr(info, "provider", "local") != "github":
-            self.agent.set_workspace(Workspace(provider="local", root=self.workspace))
+        # /code is the local-project front door. A GitHub API workspace is a
+        # different work context and must never silently survive this switch.
+        self.gh_ws = None
+        self.agent.set_workspace(Workspace(provider="local", root=self.workspace))
         self.agent.set_working_mode("code")
         self.config.working_mode = "code"
         self.config.save()
@@ -324,6 +325,13 @@ class ProductRepl(BaseRepl):
 
     async def command(self, text: str) -> bool:
         return await super().command(self._compat(text))
+
+    def _leave_conversation(self) -> None:
+        """Reset product state that belongs to the conversation being left."""
+        super()._leave_conversation()
+        self._turn_marks.clear()
+        self._last_changed_paths.clear()
+        self._named_checkpoints.clear()
 
     # -- conversation and context -------------------------------------
 
@@ -442,9 +450,11 @@ class ProductRepl(BaseRepl):
                         or row.branch == target or row.branch == f"wynxo/{target}"), None)
             if hit is None:
                 hit = Path(target).expanduser()
+            previous = self.workspace
             super().cmd_cd([str(hit)])
-            self._apply_scope(Scope.REPO)
-            self._refresh_branch()
+            if self.workspace != previous:
+                self._apply_scope(Scope.REPO)
+                self._refresh_branch()
             return True
         if action == "remove":
             if len(args) < 2:
