@@ -1,8 +1,8 @@
 """Canonical product commands for Wynxo 0.2.
 
 The legacy CLI remains the execution engine. This module gives it one product
-surface: CHAT/CODE/GITHUB describes the kind of work, while
-PLAN/ASK/AUTO/REVIEW/YOLO describes autonomy.
+surface: CHAT/WORK describes whether tools exist, workspace selection stays
+separate, and PLAN/ASK/AUTO/REVIEW/YOLO describes autonomy.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ BaseRepl = cli.Repl
 BaseCompleter = cli.CommandCompleter
 
 PRIMARY = (
-    "/chat", "/code", "/github", "/mode", "/model", "/context",
+    "/chat", "/work", "/github", "/mode", "/model", "/context",
     "/resume", "/new", "/clear", "/diff", "/test", "/commit",
     "/undo", "/checkpoint", "/restore", "/worktree", "/voice",
     "/stats", "/doctor", "/help", "/quit",
@@ -32,12 +32,12 @@ PRIMARY = (
 
 # Kept as dispatcher compatibility, not as competing entries in discovery.
 HIDDEN_COMPAT = {
-    "/ctx", "/repo", "/gh", "/todo", "/sessions", "/yolo", "/mommy",
+    "/code", "/ctx", "/repo", "/gh", "/todo", "/sessions", "/yolo", "/mommy",
 }
 
 TERMS = {
     "/chat": ("talk", "conversation", "chatter", "companion"),
-    "/code": ("code", "coding", "project", "local"),
+    "/work": ("work", "agent", "tools", "computer", "code", "coding", "project", "local"),
     "/github": ("git", "repo", "repository", "remote", "pr"),
     "/mode": ("permission", "autonomy", "approval", "review"),
     "/model": ("llm", "ollama", "model"),
@@ -97,6 +97,8 @@ def install_commands(cli_mod) -> None:
             ("affected", "full"))
 
     additions = (
+        cli_mod.Command("/work", "full agent: files, shell, web, GitHub and computer tools",
+                        "cmd_work"),
         cli_mod.Command("/checkpoint", "name the current undo position",
                         "cmd_checkpoint"),
         cli_mod.Command("/restore", "restore a named checkpoint",
@@ -190,10 +192,7 @@ class ProductRepl(BaseRepl):
     def _product_mode(self) -> str:
         if getattr(self.agent, "working_mode", "code") == "chat":
             return "CHAT"
-        info = getattr(self.agent, "workspace_info", None)
-        if info is not None and getattr(info, "provider", "local") == "github":
-            return "GITHUB"
-        return "CODE"
+        return "WORK"
 
     def _autonomy(self) -> str:
         mode = getattr(getattr(self.agent, "permissions", None), "mode", Mode.MANUAL)
@@ -237,12 +236,11 @@ class ProductRepl(BaseRepl):
         self.agent.set_working_mode("chat")
         self.config.working_mode = "chat"
         self.config.save()
-        self.ui.success("CHAT · project tools off")
+        self.ui.success("CHAT · zero tools")
         return True
 
-    def cmd_code(self, args: list[str]) -> bool:
-        # /code is the local-project front door. A GitHub API workspace is a
-        # different work context and must never silently survive this switch.
+    def cmd_work(self, args: list[str]) -> bool:
+        """Enter the local full-tool agent workspace."""
         self.gh_ws = None
         self.agent.set_workspace(Workspace(provider="local", root=self.workspace))
         self.agent.set_working_mode("code")
@@ -250,12 +248,17 @@ class ProductRepl(BaseRepl):
         self.config.save()
         if self.project_info is None:
             self._refresh_map()
-        self.ui.success(
-            "GITHUB · repository workspace active"
-            if getattr(self.agent.workspace_info, "provider", "local") == "github"
-            else "CODE · local project tools on"
-        )
+        count = len(self.agent.tools)
+        self.ui.success(f"WORK · {count} tool{'s' if count != 1 else ''} available")
+        for name in ("computer_info", "computer_control"):
+            reason = self.agent.tools.withheld.get(name)
+            if reason:
+                self.ui.hint(f"{name}: {reason}")
         return True
+
+    def cmd_code(self, args: list[str]) -> bool:
+        """Legacy spelling for /work."""
+        return self.cmd_work(args)
 
     async def cmd_mode(self, args: list[str]) -> bool:
         if not args:
@@ -300,6 +303,8 @@ class ProductRepl(BaseRepl):
             return text
         name = parts[0].lower()
         args = parts[1:]
+        if name == "/code":
+            return "/work" + (f" {' '.join(args)}" if args else "")
         if name == "/ctx":
             return "/context" + (f" window {' '.join(args)}" if args else " status")
         if name == "/repo":
@@ -664,6 +669,7 @@ class ProductRepl(BaseRepl):
             self.ui.table(
                 ["old command", "now"],
                 [
+                    ("/code", "/work"),
                     ("/ctx", "/context window"),
                     ("/repo", "/github clone"),
                     ("/gh", "/github api"),

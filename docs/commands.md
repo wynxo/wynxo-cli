@@ -4,13 +4,29 @@
 
 The work context and autonomy are intentionally separate.
 
-- /chat — CHAT: conversation, no project tools.
-- /code — CODE: local project tools.
-- /github — GITHUB: selected GitHub repository.
-- /mode plan|ask|auto|review|yolo — how much autonomy the active work context has.
+- /chat — CHAT: ordinary conversation with an empty tool registry.
+- /work — WORK: full local agent tool registry.
+- /github — choose the local/GitHub workspace used by WORK.
+- /mode plan|ask|auto|review|yolo — how much autonomy WORK has.
+
+The old /code spelling remains a compatibility alias for /work.
 
 ASK maps to the legacy internal MANUAL policy. The public vocabulary uses ASK
 because it describes the behaviour rather than the implementation.
+
+## Computer use
+
+WORK includes `launch_application` plus two computer-use tools when the
+platform can support them. `computer_info` reads screen size or the active
+window without changing anything. `computer_control` can move/click the
+pointer, type literal text, send shortcuts and scroll.
+
+This is deterministic input control, not visual screen understanding. Wynxo
+must not invent coordinates or claim it can see a button. On Linux the tools
+use xdotool; if it is not installed, /tools shows why those capabilities are
+withheld. Desktop input prompts for permission in ASK, AUTO and REVIEW unless
+you explicitly allow it for the session; YOLO remains the explicit no-prompt
+mode.
 
 ## Context
 

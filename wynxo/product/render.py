@@ -16,7 +16,7 @@ from .events import EventBuffer, StageEvent, ToolFinished, ToolStarted
 class ProductUI(CoreUI):
     """Flat terminal transcript. Permanent surfaces stay small and quiet."""
 
-    def home(self, model: str, workspace: str, *, mode: str = "CODE",
+    def home(self, model: str, workspace: str, *, mode: str = "WORK",
              companion: str = "ready", version: str = "",
              show_companion: bool = False, show_art: bool = False,
              show_static_controls: bool = False) -> None:
@@ -38,11 +38,11 @@ class ProductUI(CoreUI):
         self.console.print(context)
         self.console.print()
         self.console.print(Text(
-            "Chat normally. Give Wynxo a project when you want it to work.",
+            "Chat normally. Switch to Work when you want Wynxo to act.",
             style=palette.text,
         ))
         self.console.print(Text(
-            "/chat conversation   /code local project   /github repository   / for commands",
+            "/chat no tools   /work all tools   /github choose workspace   / for commands",
             style=palette.faint,
         ))
         self.console.print()

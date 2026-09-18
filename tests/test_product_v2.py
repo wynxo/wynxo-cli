@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 
-from wynxo.product.commands import ProductRepl, autonomy_label
+from wynxo.product.commands import PRIMARY, ProductRepl, autonomy_label
 from wynxo.product import health
 from wynxo.scope import Mode
 
@@ -21,6 +21,9 @@ def _compat_repl(mode=Mode.MANUAL, voice="warm"):
 
 def test_legacy_commands_are_rewritten_to_canonical_surface():
     repl = _compat_repl()
+    assert repl._compat("/code") == "/work"
+    assert "/work" in PRIMARY
+    assert "/code" not in PRIMARY
     assert repl._compat("/ctx 32768") == "/context window 32768"
     assert repl._compat("/repo wynxo/wynxo-cli") == "/github clone wynxo/wynxo-cli"
     assert repl._compat("/gh status") == "/github api status"

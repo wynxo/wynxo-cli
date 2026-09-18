@@ -1502,6 +1502,7 @@ VERBS = {
     "run_tests": "tests", "shell": "run", "todo_write": "plan",
     "github_read": "github", "github_write": "github",
     "projectmap": "map", "launch_application": "launch",
+    "computer_info": "inspect", "computer_control": "control",
     "remember": "remember", "recall": "recall",
 }
 """What a tool is called on screen, where that is not what it is called in

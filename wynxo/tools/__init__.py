@@ -15,6 +15,7 @@ from .search import Glob, Grep
 from .shell import BackgroundPoll, Shell
 from .todo import TodoWrite
 from .apps import LaunchApplication
+from .computer import ComputerControl, ComputerInfo
 from .appcatalog import ApplicationCatalog
 from .navigation_tool import NavigateSymbols
 from .references_tool import FindReferences
@@ -91,6 +92,8 @@ def build_registry(
         Grep(workspace, boundary, shield),
         TodoWrite(workspace, boundary, shield),
         LaunchApplication(workspace, boundary, shield, catalog=app_catalog),
+        ComputerInfo(workspace, boundary, shield),
+        ComputerControl(workspace, boundary, shield),
         NavigateSymbols(workspace, boundary, shield),
         FindReferences(workspace, boundary, shield),
         # GitHub is a workspace integration, not a default startup dependency.

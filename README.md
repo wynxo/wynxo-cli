@@ -36,9 +36,8 @@ Two independent choices describe a session.
 
 | Work | Meaning |
 | --- | --- |
-| CHAT | Conversation only. Project tools are off. |
-| CODE | Work against the local project. |
-| GITHUB | Work against a selected GitHub repository. |
+| CHAT | Normal conversation. Zero tools and zero project context. |
+| WORK | Full agent. Files, shell, tests, web, GitHub and available computer-control tools. |
 
 | Autonomy | Meaning |
 | --- | --- |
@@ -48,16 +47,18 @@ Two independent choices describe a session.
 | REVIEW | Work freely, then review the entire turn as one patch. |
 | YOLO | Do not ask for approval. |
 
-That means a session can be CODE · REVIEW, GITHUB · ASK, CHAT · ASK, and so on.
-Use /chat, /code or /github for the work context and /mode for autonomy.
+Workspace is a separate choice inside WORK: local files by default, or a GitHub
+API workspace selected with /github. That means a session can be WORK · REVIEW,
+WORK · AUTO or CHAT. Use /chat and /work for the top-level mode and /mode for
+autonomy. /code remains a compatibility alias for /work.
 
 ## Everyday commands
 
 | Command | What it does |
 | --- | --- |
-| /chat | tool-free conversation |
-| /code | local project agent |
-| /github | GitHub workspace, clone or API workflow |
+| /chat | normal conversation; zero tools |
+| /work | full agent with every available tool |
+| /github | choose the GitHub workspace used by WORK |
 | /mode | PLAN / ASK / AUTO / REVIEW / YOLO |
 | /model | installed-model capability and local performance view |
 | /context | status, context window and compaction |
@@ -74,7 +75,7 @@ Use /chat, /code or /github for the work context and /mode for autonomy.
 | /doctor | diagnose Ollama/model setup and show actionable fixes |
 | /help | the small command surface; /help advanced for everything else |
 
-Old spellings such as /ctx, /repo, /gh, /sessions, /todo, /yolo and /mommy
+Old spellings such as /code, /ctx, /repo, /gh, /sessions, /todo, /yolo and /mommy
 remain compatibility aliases, but they no longer compete in the main command
 palette.
 
@@ -105,7 +106,7 @@ This also makes it obvious which interpreter owns the installation.
 
 ~~~text
 WYNXO  0.2.0  local AI
-CODE | REVIEW  qwen3-coder:30b  main  ~/code/my-project
+WORK | REVIEW  qwen3-coder:30b  main  ~/code/my-project
 
 > fix the retry bug and verify it
 
@@ -118,6 +119,13 @@ CODE | REVIEW  qwen3-coder:30b  main  ~/code/my-project
 
 REVIEW mode then presents the turn's combined patch once. Keep it, revert the
 whole turn, or step through files.
+
+WORK also exposes deterministic desktop control when the platform supports it:
+`computer_info` reads screen size/active-window state and `computer_control`
+can move/click, type, send shortcuts and scroll. On Linux this uses xdotool;
+when xdotool is missing the capability is shown as withheld instead of failing
+mysteriously. Desktop input is permission-gated like a command and does not
+pretend to provide visual screen understanding.
 
 ## Local-first does not mean reckless
 

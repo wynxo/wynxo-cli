@@ -39,10 +39,16 @@ vocabulary without replacing the agent loop in one risky migration.
 
 ## Safety boundaries
 
-permissions.py remains authoritative for mutations. Work context
-(CHAT/CODE/GITHUB) is not a permission level. Autonomy
-(PLAN/ASK/AUTO/REVIEW/YOLO) is not a workspace selector. Keeping them orthogonal
-prevents a UI switch from silently widening what the agent may change.
+permissions.py remains authoritative for mutations. CHAT versus WORK decides
+whether a tool registry exists at all. Workspace selection (local or GitHub) is
+separate from that, and autonomy (PLAN/ASK/AUTO/REVIEW/YOLO) is separate again.
+Keeping those three axes orthogonal prevents a UI switch from silently widening
+what the agent may change.
+
+WORK builds the full available registry. Desktop control is split into a
+read-only computer_info tool and a mutating computer_control tool. The latter is
+treated like a shell command for permission purposes in ASK/AUTO/REVIEW, so
+file-edit convenience never turns into silent mouse/keyboard automation.
 
 ## Verification
 

@@ -93,12 +93,13 @@ class PermissionStore:
         if launching_a_command:
             tool_name, args = "shell", {"command": args["command"]}
 
-        # AUTO/REVIEW may remove friction from local edits and GUI launches,
-        # but remote mutations are never covered by that convenience. A
-        # GitHub commit/branch/PR is outside the workspace and must remain an
-        # explicit user decision.
+        # Remote writes and desktop input reach beyond the local project.
+        # AUTO/REVIEW may edit files freely, but they must not silently click,
+        # type into another application, or mutate a remote repository.
         if self._is_remote_mutation(tool_name, args):
             return True
+        if tool_name == "computer_control":
+            return tool_name not in self.always_allowed_tools
 
         if self.mode in (Mode.AUTO, Mode.REVIEW):
             if tool_name != "shell":
@@ -200,6 +201,15 @@ def is_read_only_command(command: str) -> bool:
 def summarise_call(tool_name: str, args: dict, workspace=None) -> str:
     if tool_name == "shell":
         return str(args.get("command", ""))
+    if tool_name == "computer_control":
+        action = str(args.get("action", "computer"))
+        if action in {"move", "click"} and args.get("x") is not None:
+            return f"{action} {args.get('x')},{args.get('y')}"
+        if action == "key":
+            return f"key {args.get('key', '')}".strip()
+        if action == "type":
+            return f"type {len(str(args.get('text', '')))} character(s)"
+        return f"{action} {args.get('amount', '')}".strip()
     if pattern := args.get("pattern"):
         where = args.get("glob") or args.get("path")
         shown = shorten_path(where, workspace) if where else ""

@@ -46,6 +46,8 @@ _BY_TOOL = {
     "run_tests": State.TESTING,
     "shell": State.THINKING,
     "launch_application": State.THINKING,
+    "computer_info": State.READING,
+    "computer_control": State.THINKING,
     "background_poll": State.THINKING,
     "todo_write": State.THINKING,
 }
