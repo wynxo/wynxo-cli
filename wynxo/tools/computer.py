@@ -328,7 +328,7 @@ def _ydotool_control(args: ComputerControlInput) -> None:
         _run(["ydotool", "key", *_ydotool_key_sequence(args.key)])
         return
     raise OSError(
-        "ydotool does not expose wheel scrolling; use key=pageup/pagedown "
+        "ydotool does not expose wheel scrolling; send PageUp/PageDown with the key action "
         "or install wdotool for native Wayland scroll events"
     )
 
