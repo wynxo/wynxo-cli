@@ -621,8 +621,10 @@ class ProductRepl(BaseRepl):
             rows.append((
                 model.name + ("  ←" if same_model(model.name, self.config.model) else ""),
                 model.human_size(),
-                "tools" if model.supports_tools else "chat",
-                "think" if model.supports_thinking else "",
+                ("tools" if model.supports_tools else "chat")
+                if model.capabilities_known else "?",
+                ("think" if model.supports_thinking else "")
+                if model.capabilities_known else "?",
                 f"{model.context_length // 1024}k" if model.context_length else "?",
                 gpu,
                 observed,
@@ -767,7 +769,7 @@ class ProductRepl(BaseRepl):
             health.record(
                 getattr(last, "model", "") or self.config.model,
                 tps=float(getattr(last, "tokens_per_second", 0) or 0),
-                ttft_ms=float(getattr(last, "time_to_first_token_ms", 0) or 0),
+                ttft_ms=1000.0 * float(getattr(last, "time_to_first_token", 0) or 0),
                 tool_failures=int(getattr(self.callbacks, "tool_failures", 0) or 0),
             )
         self._refresh_branch()
