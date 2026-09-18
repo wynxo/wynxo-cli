@@ -647,24 +647,6 @@ class ProductRepl(BaseRepl):
         self.ui.hint("/model <name> switches; Wynxo never switches models silently")
         return True
 
-    async def cmd_doctor(self, args: list[str]) -> bool:
-        result = await super().cmd_doctor(args)
-        try:
-            from ..provider import same_model
-            loaded = await self.client.running()
-            mine = next((item for item in loaded
-                         if same_model(item.name, self.config.model)), None)
-            info = getattr(self.agent, "model_info", None)
-            if mine is not None and mine.split and info is not None and info.size:
-                suggested = mine.context_that_fits(info.size, self.config.num_ctx)
-                if 4096 <= suggested < self.config.num_ctx:
-                    self.ui.info(
-                        f"action: /context window {suggested} may reduce CPU spill "
-                        f"(current GPU placement {mine.on_gpu * 100:.0f}%)"
-                    )
-        except Exception:
-            pass
-        return result
 
     # -- help ----------------------------------------------------------
 
