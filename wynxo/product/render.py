@@ -5,7 +5,6 @@ from __future__ import annotations
 import re
 
 from rich.console import Group
-from rich.table import Table
 from rich.text import Text
 
 from ..cli import TerminalCallbacks as CoreCallbacks

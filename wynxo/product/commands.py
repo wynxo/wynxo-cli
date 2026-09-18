@@ -8,12 +8,10 @@ PLAN/ASK/AUTO/REVIEW/YOLO describes autonomy.
 from __future__ import annotations
 
 import difflib
-import re
 import time
 from pathlib import Path
 
 from prompt_toolkit.completion import Completion
-from rich.text import Text
 
 from .. import cli
 from ..scope import Mode, Scope
