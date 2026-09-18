@@ -357,7 +357,7 @@ def _voice_summary(voice: str) -> str:
         "mentor": "explains the reasoning behind decisions",
         "blunt": "the fewest words that say what happened",
         "kawaii": "cheerful and affectionate, same engineering underneath",
-        "mommy": "warm, playful, doting -- your goodboy, her mommy (default) -- same engineering underneath",
+        "mommy": "warm, playful, doting -- your goodboy, her mommy -- same engineering underneath",
     }.get(voice, "")
 
 

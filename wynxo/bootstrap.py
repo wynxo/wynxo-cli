@@ -1,33 +1,18 @@
-"""Stable process bootstrap for the installed ``wynxo`` command."""
+"""Stable process bootstrap for the installed wynxo command."""
 
 from __future__ import annotations
 
 
 def main():
-    """Start the CLI with compatibility and the product shell installed.
-
-    The agent and REPL stay in ``cli.py``. Product behaviour and presentation
-    are installed in focused layers so the provider/tool loop stays stable
-    while conversation and terminal UX can evolve independently.
-    """
-    # Install compatibility shims before cli imports the provider/client.
+    """Install the product composition once, then delegate to the CLI core."""
     from . import runtime_compat  # noqa: F401
-
-    from . import clean_ui
     from . import cli
-    from . import experience
-    from . import help_ui
-    from . import product_ui
 
-    # Tests and embedders sometimes replace cli.main with their own callable.
-    # In that case this function is only a dispatcher; do not globally restyle
-    # classes in the host process. The installed command always reaches the
-    # real wynxo.cli.main and therefore gets the product shell.
+    # Tests and embedders can replace cli.main. In that case bootstrap remains
+    # a bare dispatcher and does not mutate classes in the host process.
     if getattr(cli.main, "__module__", "") == cli.__name__:
-        product_ui.install()
-        clean_ui.install()
-        experience.install()
-        help_ui.install()
+        from .product import install
+        install()
     return cli.main()
 
 

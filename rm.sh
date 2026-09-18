@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # One-line uninstall for wynxo (Linux, macOS, Termux).
 #
-#   curl -fsSL https://raw.githubusercontent.com/wynxo/wynxo-AI-Agent-Termianl-CLI/main/rm.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/wynxo/wynxo-cli/main/rm.sh | sh
 #
 # Uses the uninstaller from the local checkout when there is one, and
 # downloads it otherwise -- so this still works for an install made before
@@ -10,7 +10,7 @@
 set -eu
 
 DEST="${WYNXO_SRC:-$HOME/.wynxo-src}"
-RAW="https://raw.githubusercontent.com/wynxo/wynxo-AI-Agent-Termianl-CLI/main/uninstall.py"
+RAW="https://raw.githubusercontent.com/wynxo/wynxo-cli/main/uninstall.py"
 
 say() { printf '  %s\n' "$*"; }
 

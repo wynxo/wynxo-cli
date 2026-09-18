@@ -1,12 +1,12 @@
 # One-line install for wynxo (Windows).
 #
-#   irm https://raw.githubusercontent.com/wynxo/wynxo-AI-Agent-Termianl-CLI/main/get.ps1 | iex
+#   irm https://raw.githubusercontent.com/wynxo/wynxo-cli/main/get.ps1 | iex
 #
 # Clones into %USERPROFILE%\.wynxo-src (or updates it), then runs the real
 # installer. Short on purpose: nobody reads a long script before running it.
 
 $ErrorActionPreference = "Stop"
-$repo = "https://github.com/wynxo/wynxo-AI-Agent-Termianl-CLI"
+$repo = "https://github.com/wynxo/wynxo-cli"
 $dest = if ($env:WYNXO_SRC) { $env:WYNXO_SRC } else { Join-Path $HOME ".wynxo-src" }
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {

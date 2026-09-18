@@ -1,6 +1,6 @@
 # One-line uninstall for wynxo (Windows).
 #
-#   irm https://raw.githubusercontent.com/wynxo/wynxo-AI-Agent-Termianl-CLI/main/rm.ps1 | iex
+#   irm https://raw.githubusercontent.com/wynxo/wynxo-cli/main/rm.ps1 | iex
 #
 # Uses the uninstaller from the local checkout when there is one, and
 # downloads it otherwise -- so this still works for an install made before
@@ -8,7 +8,7 @@
 
 $ErrorActionPreference = "Stop"
 $dest = if ($env:WYNXO_SRC) { $env:WYNXO_SRC } else { Join-Path $HOME ".wynxo-src" }
-$raw = "https://raw.githubusercontent.com/wynxo/wynxo-AI-Agent-Termianl-CLI/main/uninstall.py"
+$raw = "https://raw.githubusercontent.com/wynxo/wynxo-cli/main/uninstall.py"
 
 function Find-Python {
     foreach ($try in @(@("py", "-3"), @("python", $null), @("python3", $null))) {

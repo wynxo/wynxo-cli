@@ -1,6 +1,6 @@
 [project]
 name = "wynxo"
-version = "0.1.0"
+version = "0.2.0"
 description = "A local-first terminal AI assistant for Ollama: natural chat, coding, and agent workflows."
 readme = "README.md"
 requires-python = ">=3.10"

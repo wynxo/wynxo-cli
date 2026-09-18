@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # One-line install for wynxo (Linux, macOS, Termux).
 #
-#   curl -fsSL https://raw.githubusercontent.com/wynxo/wynxo-AI-Agent-Termianl-CLI/main/get.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/wynxo/wynxo-cli/main/get.sh | sh
 #
 # Clones into ~/.wynxo-src (or updates it if already there), then runs the
 # real installer. Everything it does is visible below -- it is deliberately
@@ -9,7 +9,7 @@
 
 set -eu
 
-REPO="https://github.com/wynxo/wynxo-AI-Agent-Termianl-CLI"
+REPO="https://github.com/wynxo/wynxo-cli"
 DEST="${WYNXO_SRC:-$HOME/.wynxo-src}"
 
 say() { printf '  %s\n' "$*"; }
