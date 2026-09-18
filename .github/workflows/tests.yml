@@ -68,6 +68,11 @@ jobs:
         run: python -c "import wynxo, wynxo.cli, wynxo.agent, wynxo.provider"
 
       - name: Tests
+        # The full Windows suite legitimately takes longer than the original
+        # 150-second watchdog on hosted runners. Keep hang detection, but give
+        # normal tmp-path/setup work enough headroom to finish.
+        env:
+          WYNXO_TEST_TIMEOUT: "360"
         run: python -m pytest -q
 
       - name: Where it hung
