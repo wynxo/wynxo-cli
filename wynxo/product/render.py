@@ -11,7 +11,6 @@ from ..cli import TerminalCallbacks as CoreCallbacks
 from ..ui import UI as CoreUI, plan_steps, sanitise
 from .events import EventBuffer, StageEvent, ToolFinished, ToolStarted
 
-_TEST_COUNTS = re.compile(r"(?:(\d+)\s+passed)?(?:.*?(\d+)\s+failed)?", re.IGNORECASE)
 
 
 class ProductUI(CoreUI):

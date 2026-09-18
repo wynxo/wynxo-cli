@@ -78,6 +78,29 @@ Old spellings such as /ctx, /repo, /gh, /sessions, /todo, /yolo and /mommy
 remain compatibility aliases, but they no longer compete in the main command
 palette.
 
+
+### Advanced commands
+
+The main palette stays small, but the full power-user surface is still documented
+and available through `/help advanced`: `/animate`, `/apps`, `/cd`,
+`/commit`, `/compact`, `/copy`, `/dictate`, `/effort`, `/endpoint`,
+`/init`, `/log`, `/map`, `/memory`, `/pet`, `/plan`, `/pull`,
+`/queue`, `/quit`, `/review`, `/scope`, `/secrets`, `/stats`,
+`/stream`, `/talker`, `/theme`, `/thinking`, and `/tools`.
+
+### Windows policy-safe fallback
+
+If Windows App Control, Device Guard, or execution policy blocks a generated
+launcher or PowerShell activation, do not activate the virtual environment.
+From the repository root, invoke its interpreter directly:
+
+~~~powershell
+.venv\Scripts\python.exe -m pip install -e .
+.venv\Scripts\python.exe -m wynxo
+~~~
+
+This also makes it obvious which interpreter owns the installation.
+
 ## A normal coding turn
 
 ~~~text

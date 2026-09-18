@@ -276,11 +276,11 @@ class ProductRepl(BaseRepl):
                 return True
             args = [chosen]
 
-        key = args[0].lower()
-        if key == "ask":
-            key = "manual"
+        mode_name = args[0].lower()
+        if mode_name == "ask":
+            mode_name = "manual"
         try:
-            mode = Mode.parse(key)
+            mode = Mode.parse(mode_name)
         except KeyError as exc:
             self.ui.warn(str(exc).replace("manual", "ask"))
             return True
