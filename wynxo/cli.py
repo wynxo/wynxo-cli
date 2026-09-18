@@ -131,6 +131,8 @@ _ACTIVITY = {
     "read_file": "reading", "write_file": "writing file", "edit_file": "editing",
     "list_dir": "listing", "glob": "finding", "grep": "searching",
     "shell": "running", "todo_write": "planning", "launch_application": "launching",
+    "computer_info": "inspecting desktop",
+    "computer_control": "controlling desktop",
     "run_tests": "testing",
 }
 _LANGUAGE = {"read_file": "python", "shell": "text"}

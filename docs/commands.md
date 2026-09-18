@@ -22,11 +22,13 @@ window without changing anything. `computer_control` can move/click the
 pointer, type literal text, send shortcuts and scroll.
 
 This is deterministic input control, not visual screen understanding. Wynxo
-must not invent coordinates or claim it can see a button. On Linux the tools
-use xdotool; if it is not installed, /tools shows why those capabilities are
-withheld. Desktop input prompts for permission in ASK, AUTO and REVIEW unless
-you explicitly allow it for the session; YOLO remains the explicit no-prompt
-mode.
+must not invent coordinates or claim it can see a button. On Wayland, WORK
+prefers wdotool and falls back to ydotool + ydotoold when available; on X11
+it can use xdotool. The read-only computer_info helper currently needs an
+X11-compatible xdotool path, while input control can still work on Wayland.
+/tools explains any withheld backend. Desktop input prompts for permission in
+ASK, AUTO and REVIEW unless you explicitly allow it for the session; YOLO
+remains the explicit no-prompt mode.
 
 ## Context
 

@@ -122,10 +122,11 @@ whole turn, or step through files.
 
 WORK also exposes deterministic desktop control when the platform supports it:
 `computer_info` reads screen size/active-window state and `computer_control`
-can move/click, type, send shortcuts and scroll. On Linux this uses xdotool;
-when xdotool is missing the capability is shown as withheld instead of failing
-mysteriously. Desktop input is permission-gated like a command and does not
-pretend to provide visual screen understanding.
+can move/click, type, send shortcuts and scroll. On Wayland, Wynxo prefers
+wdotool and can fall back to ydotool + ydotoold; on X11 it can use xdotool.
+Unavailable backends are shown as withheld instead of failing mysteriously.
+Desktop input is permission-gated like a command and does not pretend to
+provide visual screen understanding.
 
 ## Local-first does not mean reckless
 

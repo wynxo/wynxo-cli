@@ -108,8 +108,11 @@ class ComputerControl(Tool):
     concurrency_safe = False
 
     def unavailable(self) -> str:
-        if sys.platform.startswith("linux") and not shutil.which("xdotool"):
-            return "xdotool is not installed; install it to enable desktop control"
+        if sys.platform.startswith("linux") and not _linux_control_driver():
+            return (
+                "no Linux desktop-input backend found; install wdotool for "
+                "Wayland/KDE, ydotool + ydotoold, or xdotool for X11"
+            )
         if sys.platform == "darwin" and not shutil.which("osascript"):
             return "osascript is unavailable"
         return ""
@@ -200,7 +203,33 @@ def _linux_info(action: str) -> ToolResult:
     )
 
 
+def _linux_control_driver() -> str:
+    """Best available Linux input backend for this session."""
+    wayland = bool(os.environ.get("WAYLAND_DISPLAY"))
+    if wayland and shutil.which("wdotool"):
+        return "wdotool"
+    if wayland and shutil.which("ydotool"):
+        return "ydotool"
+    if shutil.which("xdotool"):
+        return "xdotool"
+    if shutil.which("wdotool"):
+        return "wdotool"
+    if shutil.which("ydotool"):
+        return "ydotool"
+    return ""
+
+
 def _linux_control(args: ComputerControlInput) -> None:
+    driver = _linux_control_driver()
+    if driver == "wdotool":
+        _wdotool_control(args)
+        return
+    if driver == "ydotool":
+        _ydotool_control(args)
+        return
+    if driver != "xdotool":
+        raise OSError("no supported Linux desktop-input backend is installed")
+
     if args.action == "move":
         _run(["xdotool", "mousemove", "--sync", str(args.x), str(args.y)])
         return
@@ -219,6 +248,89 @@ def _linux_control(args: ComputerControlInput) -> None:
         return
     button = "5" if args.amount > 0 else "4"
     _run(["xdotool", "click", "--repeat", str(abs(args.amount)), button])
+
+
+def _wdotool_control(args: ComputerControlInput) -> None:
+    if args.action == "move":
+        _run(["wdotool", "mousemove", str(args.x), str(args.y)])
+        return
+    if args.action == "click":
+        if args.x >= 0:
+            _run(["wdotool", "mousemove", str(args.x), str(args.y)])
+        button = {"left": "1", "middle": "2", "right": "3"}[args.button]
+        _run(["wdotool", "click", button])
+        return
+    if args.action == "type":
+        _run(["wdotool", "type", "--delay", str(args.delay_ms), args.text])
+        return
+    if args.action == "key":
+        _run(["wdotool", "key", "--clearmodifiers", args.key.strip()])
+        return
+    _run(["wdotool", "scroll", "0", str(args.amount)])
+
+
+_LINUX_KEYS = {
+    "esc": 1, "escape": 1, "tab": 15, "enter": 28, "return": 28,
+    "ctrl": 29, "control": 29, "shift": 42, "alt": 56, "space": 57,
+    "backspace": 14, "delete": 111, "home": 102, "up": 103,
+    "pageup": 104, "left": 105, "right": 106, "end": 107,
+    "down": 108, "pagedown": 109, "super": 125, "meta": 125, "win": 125,
+    "f1": 59, "f2": 60, "f3": 61, "f4": 62, "f5": 63, "f6": 64,
+    "f7": 65, "f8": 66, "f9": 67, "f10": 68, "f11": 87, "f12": 88,
+    "1": 2, "2": 3, "3": 4, "4": 5, "5": 6, "6": 7,
+    "7": 8, "8": 9, "9": 10, "0": 11,
+    "q": 16, "w": 17, "e": 18, "r": 19, "t": 20, "y": 21,
+    "u": 22, "i": 23, "o": 24, "p": 25, "a": 30, "s": 31,
+    "d": 32, "f": 33, "g": 34, "h": 35, "j": 36, "k": 37,
+    "l": 38, "z": 44, "x": 45, "c": 46, "v": 47, "b": 48,
+    "n": 49, "m": 50,
+}
+_LINUX_MODIFIERS = frozenset(
+    {"ctrl", "control", "shift", "alt", "super", "meta", "win"}
+)
+
+
+def _ydotool_key_sequence(raw: str) -> list[str]:
+    pieces = [part.strip().lower() for part in raw.split("+") if part.strip()]
+    if not pieces:
+        raise ValueError("empty key")
+    modifiers = [part for part in pieces if part in _LINUX_MODIFIERS]
+    normal = [part for part in pieces if part not in _LINUX_MODIFIERS]
+    if len(normal) != 1:
+        raise ValueError(f"unsupported ydotool shortcut {raw!r}")
+    try:
+        mod_codes = [_LINUX_KEYS[part] for part in modifiers]
+        key_code = _LINUX_KEYS[normal[0]]
+    except KeyError as exc:
+        raise ValueError(f"unsupported ydotool key {exc.args[0]!r}") from None
+    sequence = [f"{code}:1" for code in mod_codes]
+    sequence.extend((f"{key_code}:1", f"{key_code}:0"))
+    sequence.extend(f"{code}:0" for code in reversed(mod_codes))
+    return sequence
+
+
+def _ydotool_control(args: ComputerControlInput) -> None:
+    if args.action == "move":
+        _run(["ydotool", "mousemove", "--absolute", "-x", str(args.x),
+              "-y", str(args.y)])
+        return
+    if args.action == "click":
+        if args.x >= 0:
+            _run(["ydotool", "mousemove", "--absolute", "-x", str(args.x),
+                  "-y", str(args.y)])
+        button = {"left": "0xC0", "right": "0xC1", "middle": "0xC2"}[args.button]
+        _run(["ydotool", "click", button])
+        return
+    if args.action == "type":
+        _run(["ydotool", "type", "--key-delay", str(args.delay_ms), args.text])
+        return
+    if args.action == "key":
+        _run(["ydotool", "key", *_ydotool_key_sequence(args.key)])
+        return
+    raise OSError(
+        "ydotool does not expose wheel scrolling; use key=pageup/pagedown "
+        "or install wdotool for native Wayland scroll events"
+    )
 
 
 def _mac_info(action: str) -> ToolResult:
