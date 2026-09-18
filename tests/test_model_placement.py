@@ -102,7 +102,8 @@ class TestToolsThatCannotWorkAreNotOffered:
         monkeypatch.setattr("wynxo.gh.shutil.which", lambda name: "/usr/bin/gh")
         registry = build_registry(tmp_path)
         assert "github_read" in registry
-        assert "github_read" not in registry.withheld\n        assert "github_write" not in registry.withheld
+        assert "github_read" not in registry.withheld
+        assert "github_write" not in registry.withheld
 
     def test_holding_them_back_is_worth_real_context(self, tmp_path, monkeypatch):
         """The saving is the reason this exists, so it is worth asserting."""
