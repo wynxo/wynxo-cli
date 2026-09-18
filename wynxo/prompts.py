@@ -412,7 +412,7 @@ memories about the user.
 {memory}"""
 
 
-def build_chat_prompt(voice: str = "mommy", memory: str = "",
+def build_chat_prompt(voice: str = "warm", memory: str = "",
                       serious: bool = False) -> str:
     """The system prompt for a pure-conversation turn.
 
